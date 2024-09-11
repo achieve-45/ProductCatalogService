@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ProductController is a REST controller that handles requests related to products.
+ */
 @RestController
 @RequestMapping("/products")
 public class ProductController {
@@ -24,6 +27,11 @@ public class ProductController {
     //@Qualifier("sps")
     private IProductService productService;
 
+    /**
+     * Retrieves a list of all products.
+     *
+     * @return a list of ProductDto objects
+     */
     @GetMapping
     public List<ProductDto> getProducts() {
         List<ProductDto> response = new ArrayList<>();
@@ -33,8 +41,15 @@ public class ProductController {
         }
 
         return response;
-     }
+    }
 
+    /**
+     * Retrieves a product by its ID.
+     *
+     * @param productId the ID of the product to retrieve
+     * @return a ResponseEntity containing the ProductDto and HTTP status
+     * @throws IllegalArgumentException if the productId is invalid
+     */
     @GetMapping("{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long productId) {
         try {
@@ -56,7 +71,12 @@ public class ProductController {
         }
     }
 
-
+    /**
+     * Creates a new product.
+     *
+     * @param productDto the ProductDto object containing product details
+     * @return the created ProductDto
+     */
     @PostMapping
     public ProductDto createProduct(@RequestBody ProductDto productDto)
     {
@@ -65,13 +85,26 @@ public class ProductController {
         return getProductDto(result);
     }
 
+    /**
+     * Replaces an existing product with new details.
+     *
+     * @param id the ID of the product to replace
+     * @param productDto the ProductDto object containing new product details
+     * @return the updated ProductDto
+     */
     @PutMapping("{id}")
     public ProductDto replaceProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
-      Product input = getProduct(productDto);
-      Product product = productService.replaceProduct(input,id);
-      return getProductDto(product);
+        Product input = getProduct(productDto);
+        Product product = productService.replaceProduct(input,id);
+        return getProductDto(product);
     }
 
+    /**
+     * Converts a ProductDto to a Product entity.
+     *
+     * @param productDto the ProductDto object
+     * @return the Product entity
+     */
     private Product getProduct(ProductDto productDto) {
         Product product = new Product();
         product.setId(productDto.getId());
@@ -88,6 +121,12 @@ public class ProductController {
         return product;
     }
 
+    /**
+     * Converts a Product entity to a ProductDto.
+     *
+     * @param product the Product entity
+     * @return the ProductDto object
+     */
     private ProductDto getProductDto(Product product) {
         ProductDto productDto = new ProductDto();
         productDto.setId(product.getId());
