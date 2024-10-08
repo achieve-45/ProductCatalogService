@@ -19,8 +19,8 @@ public class Category extends BaseModel {
 
     private String description;
 
-    @OneToMany(mappedBy = "category",fetch = FetchType.LAZY)
-    //@Fetch(FetchMode.SELECT)
+    @OneToMany(mappedBy = "category",fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SELECT)
     //@BatchSize(size=10)
     private List<Product> products;
 }

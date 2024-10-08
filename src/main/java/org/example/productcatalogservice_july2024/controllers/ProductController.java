@@ -21,7 +21,7 @@ import java.util.List;
 public class ProductController {
 
     @Autowired
-    //@Qualifier("sps")
+    @Qualifier("sps")
     private IProductService productService;
 
     @GetMapping
@@ -40,19 +40,23 @@ public class ProductController {
         try {
             if (productId == 0) {
                 throw new IllegalArgumentException("ProductId is invalid");
-            } else if(productId < 0) {
-                throw new IllegalArgumentException("Are you crazy ?");
+            } else if (productId < 0) {
+                throw new IllegalArgumentException("Are you crazy?");
             }
 
-            //productId++;
-
             Product product = productService.getProductById(productId);
+            if (product == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
             ProductDto productDto = getProductDto(product);
             MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
             headers.add("called By", "Anurag Khanna");
             return new ResponseEntity<>(productDto, headers, HttpStatus.OK);
-        }catch (IllegalArgumentException exception) {
+        } catch (IllegalArgumentException exception) {
             throw exception;
+        } catch (Exception exception) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

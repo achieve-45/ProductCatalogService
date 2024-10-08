@@ -48,8 +48,8 @@ class CategoryRepoTest {
             if(!category.getProducts().isEmpty()) {
                 List<Product> products = category.getProducts();
                 for(Product product : products) {
-                   System.out.println(product.getDescription());
-               }
+                    System.out.println(product.getDescription());
+                }
             }
         }
     }
