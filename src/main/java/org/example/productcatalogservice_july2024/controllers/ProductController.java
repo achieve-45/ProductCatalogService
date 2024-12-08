@@ -12,20 +12,28 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
+@RequestMapping ("/products")
 public class ProductController {
 
     @Autowired
     private IProductService productService;
 
-    @GetMapping("/products")
+    @GetMapping
     public List<ProductDto> getProducts() {
-        return null;
+        List<Product> products = productService.getAllProducts();
+        List<ProductDto> response = new ArrayList<>();
+        for(Product product : products) {
+            response.add(getProductDto(product));
+        }
+        return response;
     }
 
-    @GetMapping("/products/{id}")
+    @GetMapping("{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long productId) {
         try {
             if (productId <= 0) {
@@ -35,7 +43,9 @@ public class ProductController {
             Product product = productService.getProductById(productId);
             ProductDto productDto = getProductDto(product);
             MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-            headers.add("called By", "Anurag Khanna");
+            headers.add("called By", "Achieve");
+            //headers.put("called By", Collections.singletonList("Achieve Pattanaik"));
+
             return new ResponseEntity<>(productDto, headers, HttpStatus.OK);
         }catch (IllegalArgumentException exception) {
             return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
@@ -43,11 +53,39 @@ public class ProductController {
     }
 
 
-    @PostMapping("/products")
+    @PostMapping
     public ProductDto createProduct(@RequestBody ProductDto product)
     {
         return null;
     }
+
+
+
+    @PutMapping("{id}")
+    public ProductDto replaceProduct(@PathVariable Long id, @RequestBody ProductDto productDto)
+    {
+        Product input = getProduct(productDto);
+        Product product = productService.replaceProduct(input, id);
+        return getProductDto(product);
+    }
+
+    private Product getProduct(ProductDto productDto) {
+        Product product = new Product();
+        product.setId(productDto.getId());
+        product.setName(productDto.getName());
+        product.setPrice(productDto.getPrice());
+        product.setImageUrl(productDto.getImageUrl());
+        product.setDescription(productDto.getDescription());
+        if(productDto.getCategory() != null) {
+            Category category = new Category();
+
+            category.setName(productDto.getCategory().getName());
+            product.setCategory(category);
+        }
+
+        return product;
+    }
+
 
     private ProductDto getProductDto(Product product) {
         ProductDto productDto = new ProductDto();
