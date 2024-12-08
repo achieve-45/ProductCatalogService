@@ -35,29 +35,30 @@ public class ProductController {
 
     @GetMapping("{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long productId) {
-        try {
-            if (productId <= 0) {
-                throw new IllegalArgumentException("ProductId is invalid");
-            }
-
-            Product product = productService.getProductById(productId);
-            ProductDto productDto = getProductDto(product);
-            MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-            headers.add("called By", "Achieve");
-            //headers.put("called By", Collections.singletonList("Achieve Pattanaik"));
-
-            return new ResponseEntity<>(productDto, headers, HttpStatus.OK);
-        }catch (IllegalArgumentException exception) {
-            return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+        if (productId <= 0) {
+            throw new IllegalArgumentException("ProductId is invalid");
         }
+
+        Product product = productService.getProductById(productId);
+        ProductDto productDto = getProductDto(product);
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("called By", "Achieve");
+        //headers.put("called By", Collections.singletonList("Achieve Pattanaik"));
+
+        return new ResponseEntity<>(productDto, headers, HttpStatus.OK);
     }
 
 
     @PostMapping
-    public ProductDto createProduct(@RequestBody ProductDto product)
-    {
+    public ProductDto createProduct(@RequestBody ProductDto productDto) {
+        /*Product input = getProduct(productDto);
+        Product product = productService.createProduct(input);
+        return getProductDto(product);*/
         return null;
     }
+
+
+
 
 
 
@@ -102,4 +103,6 @@ public class ProductController {
         }
         return productDto;
     }
+
+
 }
