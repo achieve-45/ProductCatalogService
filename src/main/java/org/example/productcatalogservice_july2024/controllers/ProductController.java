@@ -6,6 +6,7 @@ import org.example.productcatalogservice_july2024.models.Category;
 import org.example.productcatalogservice_july2024.models.Product;
 import org.example.productcatalogservice_july2024.services.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
@@ -13,60 +14,57 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
-@RequestMapping ("/products")
+@RequestMapping("/products")
 public class ProductController {
 
     @Autowired
+    @Qualifier("sps")
     private IProductService productService;
 
-    @GetMapping
+    @GetMapping("/")
     public List<ProductDto> getProducts() {
-        List<Product> products = productService.getAllProducts();
         List<ProductDto> response = new ArrayList<>();
+        List<Product> products = productService.getAllProducts();
         for(Product product : products) {
             response.add(getProductDto(product));
         }
+
         return response;
     }
 
     @GetMapping("{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long productId) {
-        if (productId <= 0) {
-            throw new IllegalArgumentException("ProductId is invalid");
+        try {
+            if (productId <= 0) {
+                throw new IllegalArgumentException("ProductId is invalid");
+            }
+
+            Product product = productService.getProductById(productId);
+            ProductDto productDto = getProductDto(product);
+            MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+            headers.add("called By", "Anurag Khanna");
+            return new ResponseEntity<>(productDto, headers, HttpStatus.OK);
+        }catch (IllegalArgumentException exception) {
+            throw exception;
         }
-
-        Product product = productService.getProductById(productId);
-        ProductDto productDto = getProductDto(product);
-        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.add("called By", "Achieve");
-        //headers.put("called By", Collections.singletonList("Achieve Pattanaik"));
-
-        return new ResponseEntity<>(productDto, headers, HttpStatus.OK);
     }
 
 
     @PostMapping
-    public ProductDto createProduct(@RequestBody ProductDto productDto) {
-        /*Product input = getProduct(productDto);
-        Product product = productService.createProduct(input);
-        return getProductDto(product);*/
-        return null;
+    public ProductDto createProduct(@RequestBody ProductDto productDto)
+    {
+        Product product = getProduct(productDto);
+        Product result = productService.createProduct(product);
+        return getProductDto(result);
     }
 
-
-
-
-
-
     @PutMapping("{id}")
-    public ProductDto replaceProduct(@PathVariable Long id, @RequestBody ProductDto productDto)
-    {
+    public ProductDto replaceProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
         Product input = getProduct(productDto);
-        Product product = productService.replaceProduct(input, id);
+        Product product = productService.replaceProduct(input,id);
         return getProductDto(product);
     }
 
@@ -79,14 +77,12 @@ public class ProductController {
         product.setDescription(productDto.getDescription());
         if(productDto.getCategory() != null) {
             Category category = new Category();
-
+            category.setId(productDto.getCategory().getId());
             category.setName(productDto.getCategory().getName());
             product.setCategory(category);
         }
-
         return product;
     }
-
 
     private ProductDto getProductDto(Product product) {
         ProductDto productDto = new ProductDto();
@@ -103,6 +99,4 @@ public class ProductController {
         }
         return productDto;
     }
-
-
 }
