@@ -45,7 +45,7 @@ public class FakeStoreProductService implements IProductService {
     @Override
     public List<Product> getAllProducts() {
         RestTemplate restTemplate = restTemplateBuilder.build();
-        FakeStoreProductDto[] response = restTemplate.getForEntity("http://fakestoreapi.com/products", FakeStoreProductDto[].class).getBody();
+        FakeStoreProductDto[] response = restTemplate.getForEntity("https://fakestoreapi.com/products", FakeStoreProductDto[].class).getBody();
         List<Product> products = new ArrayList<>();
         for(FakeStoreProductDto fakeStoreProductDto : response) {
             products.add(getProduct(fakeStoreProductDto));
@@ -57,7 +57,7 @@ public class FakeStoreProductService implements IProductService {
     @Override
     public Product replaceProduct(Product product, Long id) {
         FakeStoreProductDto input = getFakeStoreProductDto(product);
-        FakeStoreProductDto fakeStoreProductDtoResponse = requestForEntity("http://fakestoreapi.com/products/{id}",HttpMethod.PUT,input, FakeStoreProductDto.class,id).getBody();
+        FakeStoreProductDto fakeStoreProductDtoResponse = requestForEntity("https://fakestoreapi.com/products/{id}",HttpMethod.PUT,input, FakeStoreProductDto.class,id).getBody();
        return getProduct(fakeStoreProductDtoResponse);
     }
 
