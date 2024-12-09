@@ -35,7 +35,7 @@ public class ProductController {
         return response;
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long productId) {
         try {
             if (productId <= 0) {
@@ -53,7 +53,7 @@ public class ProductController {
     }
 
 
-    @PostMapping
+    @PostMapping("/")
     public ProductDto createProduct(@RequestBody ProductDto productDto)
     {
         Product product = getProduct(productDto);
@@ -61,7 +61,7 @@ public class ProductController {
         return getProductDto(result);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ProductDto replaceProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
         Product input = getProduct(productDto);
         Product product = productService.replaceProduct(input,id);
