@@ -21,10 +21,10 @@ import java.util.List;
 public class ProductController {
 
     @Autowired
-    //@Qualifier("sps")
+    @Qualifier("sps")
     private IProductService productService;
 
-    @GetMapping
+    @GetMapping("/")
     public List<ProductDto> getProducts() {
         List<ProductDto> response = new ArrayList<>();
         List<Product> products = productService.getAllProducts();
@@ -35,7 +35,7 @@ public class ProductController {
         return response;
      }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long productId) {
         try {
             if (productId == 0) {
@@ -57,7 +57,7 @@ public class ProductController {
     }
 
 
-    @PostMapping
+    @PostMapping("/")
     public ProductDto createProduct(@RequestBody ProductDto productDto)
     {
         Product product = getProduct(productDto);
@@ -65,12 +65,13 @@ public class ProductController {
         return getProductDto(result);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ProductDto replaceProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
-      Product input = getProduct(productDto);
-      Product product = productService.replaceProduct(input,id);
-      return getProductDto(product);
+        Product input = getProduct(productDto);
+        Product product = productService.replaceProduct(input, id);
+        return getProductDto(product);
     }
+
 
     private Product getProduct(ProductDto productDto) {
         Product product = new Product();

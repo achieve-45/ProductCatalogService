@@ -20,11 +20,8 @@ public class StorageProductService implements IProductService {
     public Product getProductById(Long id) {
         Optional<Product> optionalProduct = productRepo.findById(id);
 
-        if(optionalProduct.isPresent()) {
-            return optionalProduct.get();
-        }
+        return optionalProduct.orElse(null);
 
-        return null;
     }
 
     @Override
