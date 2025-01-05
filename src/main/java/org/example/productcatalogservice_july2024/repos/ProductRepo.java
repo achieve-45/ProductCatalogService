@@ -10,6 +10,9 @@ import java.util.Optional;
 
 @Repository
 public interface ProductRepo extends JpaRepository<Product,Long> {
+
+    List<Product> findProductByName(String query);
+
     //Product save(Product product);
 
     //Optional<Product> findById(Long id);
