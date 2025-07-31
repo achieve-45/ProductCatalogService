@@ -50,15 +50,24 @@ public class StorageProductService implements IProductService {
 
     @Override
     public Product getProductBasedOnUserRole(Long userId, Long productId) {
-        Product product = productRepo.findById(productId).get();
-
-        UserDto userDto  = restTemplate.getForEntity("http://userservice/user/{userId}", UserDto.class,userId).getBody();
-        if(userDto != null) {
-            System.out.println("received user");
-            return product;
-        } else {
+        Optional<Product> productOptional = productRepo.findById(productId);
+        if (!productOptional.isPresent()) {
             return null;
         }
 
+        Product product = productOptional.get();
+        try {
+            UserDto userDto = restTemplate.getForEntity("http://userservice/user/{userId}", UserDto.class, userId).getBody();
+            if (userDto != null) {
+                System.out.println("received user");
+                return product;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            // Log the exception
+            System.err.println("Error calling user service: " + e.getMessage());
+            return null;
+        }
     }
 }

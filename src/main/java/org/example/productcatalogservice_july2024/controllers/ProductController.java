@@ -21,7 +21,7 @@ import java.util.List;
 public class ProductController {
 
     @Autowired
-    //@Qualifier("sps")
+    @Qualifier("sps")
     private IProductService productService;
 
     @GetMapping
@@ -37,8 +37,12 @@ public class ProductController {
 
 
      @GetMapping("{userId}/{productId}")
-     public ProductDto getProductBasedOnUserRole(@PathVariable("userId") Long userId,@PathVariable("productId") Long productId) {
-        return getProductDto(productService.getProductBasedOnUserRole(userId,productId));
+     public ResponseEntity<ProductDto> getProductBasedOnUserRole(@PathVariable("userId") Long userId, @PathVariable("productId") Long productId) {
+        Product product = productService.getProductBasedOnUserRole(userId, productId);
+        if (product == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(getProductDto(product));
      }
 
     @GetMapping("{id}")
@@ -50,9 +54,11 @@ public class ProductController {
                 throw new IllegalArgumentException("Are you crazy ?");
             }
 
-            //productId++;
-
             Product product = productService.getProductById(productId);
+            if (product == null) {
+                return ResponseEntity.notFound().build();
+            }
+
             ProductDto productDto = getProductDto(product);
             MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
             headers.add("called By", "Anurag Khanna");
@@ -64,18 +70,26 @@ public class ProductController {
 
 
     @PostMapping
-    public ProductDto createProduct(@RequestBody ProductDto productDto)
+    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto)
     {
         Product product = getProduct(productDto);
         Product result = productService.createProduct(product);
-        return getProductDto(result);
+        if (result == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(getProductDto(result));
     }
 
     @PutMapping("{id}")
-    public ProductDto replaceProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
+    public ResponseEntity<ProductDto> replaceProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
       Product input = getProduct(productDto);
       Product product = productService.replaceProduct(input,id);
-      return getProductDto(product);
+
+      if (product == null) {
+          return ResponseEntity.notFound().build();
+      }
+
+      return ResponseEntity.ok(getProductDto(product));
     }
 
     private Product getProduct(ProductDto productDto) {

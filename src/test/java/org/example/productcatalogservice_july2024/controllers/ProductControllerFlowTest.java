@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 public class ProductControllerFlowTest {
@@ -15,7 +16,7 @@ public class ProductControllerFlowTest {
     @Autowired
     private ProductController productController;
 
-    //@Test
+    @Test
     public void Test_Create_Replace_GetProduct_WithStub_RunSuccessfully() {
         //Arrange
         ProductDto productDto = new ProductDto();
@@ -23,17 +24,24 @@ public class ProductControllerFlowTest {
         productDto.setName("Iphone 15");
 
         //Act
-        ProductDto response = productController.createProduct(productDto);
+        ResponseEntity<ProductDto> response = productController.createProduct(productDto);
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+
         ResponseEntity<ProductDto> productDtoResponseEntity = productController
                 .getProductById(1L);
+
         productDto.setName("Iphone 16");
 
-        ProductDto replacedProduct = productController.replaceProduct(1L,productDto);
+        ResponseEntity<ProductDto> replacedProductResponse = productController.replaceProduct(1L, productDto);
+        assertNotNull(replacedProductResponse);
+        assertNotNull(replacedProductResponse.getBody());
+
         ResponseEntity<ProductDto> productDtoResponseEntity2 = productController
                 .getProductById(1L);
 
         //Assert
-        assertEquals("Iphone 15",productDtoResponseEntity.getBody().getName());
-        assertEquals("Iphone 16",productDtoResponseEntity2.getBody().getName());
+        assertEquals("Iphone 15", productDtoResponseEntity.getBody().getName());
+        assertEquals("Iphone 16", productDtoResponseEntity2.getBody().getName());
     }
 }
