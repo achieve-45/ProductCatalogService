@@ -99,12 +99,15 @@ public class ProductController {
         product.setPrice(productDto.getPrice());
         product.setImageUrl(productDto.getImageUrl());
         product.setDescription(productDto.getDescription());
-        if(productDto.getCategory() != null) {
+
+        if (productDto.getCategory() != null) {
             Category category = new Category();
             category.setId(productDto.getCategory().getId());
             category.setName(productDto.getCategory().getName());
+            category.setDescription(productDto.getCategory().getDescription());
             product.setCategory(category);
         }
+
         return product;
     }
 
@@ -115,12 +118,15 @@ public class ProductController {
         productDto.setPrice(product.getPrice());
         productDto.setImageUrl(product.getImageUrl());
         productDto.setDescription(product.getDescription());
-        if(product.getCategory() != null) {
-            CategoryDto category = new CategoryDto();
-            category.setId(product.getCategory().getId());
-            category.setName(product.getCategory().getName());
-            productDto.setCategory(category);
+
+        if (product.getCategory() != null) {
+            CategoryDto categoryDto = new CategoryDto();
+            categoryDto.setId(product.getCategory().getId());
+            categoryDto.setName(product.getCategory().getName());
+            categoryDto.setDescription(product.getCategory().getDescription());
+            productDto.setCategory(categoryDto);
         }
+
         return productDto;
     }
 }
